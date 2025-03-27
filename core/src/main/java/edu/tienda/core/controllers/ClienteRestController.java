@@ -2,6 +2,9 @@ package edu.tienda.core.controllers;
 
 
 import edu.tienda.core.domain.Cliente;
+import edu.tienda.core.exceptions.BadRequestException;
+import edu.tienda.core.exceptions.ResourceNotFoundExceptions;
+import edu.tienda.core.exceptions.ResourceNotFoundExceptions.ClienteNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,12 +25,6 @@ public class ClienteRestController {
             new Cliente("col","1234","Colling")
     ));
 
-    public class ClienteNotFoundException extends RuntimeException {
-        public ClienteNotFoundException(String message) {
-            super(message);
-        }
-    }
-
     private Optional<Cliente> buscarClientePorUsername(String userName) {
         return clientes.stream()
                 .filter(cli -> cli.getUsername().equalsIgnoreCase(userName))
@@ -41,9 +38,14 @@ public class ClienteRestController {
 
     @GetMapping("/{userName}")
     public ResponseEntity<?> getCliente(@PathVariable String userName){
-        return buscarClientePorUsername(userName)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        if (userName.length() != 3){
+            throw new BadRequestException("El parametro nombre de usuario debe contener 3 caracteres");
+        }
+        return clientes.stream()
+                .filter(cliente -> cliente.getUsername().equalsIgnoreCase(userName)) // Filtramos el cliente correcto
+                .findFirst() // Obtenemos el primer resultado como un Optional
+                .map(ResponseEntity::ok) // Si el cliente existe, devolvemos ResponseEntity con 200 OK
+                .orElseThrow(() -> new ResourceNotFoundExceptions("Cliente " + userName +" no encontrado")); // Si no existe, lanzamos la excepción
     }
 
     @PostMapping
