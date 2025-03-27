@@ -2,14 +2,18 @@ package edu.tienda.core.controllers;
 
 
 import edu.tienda.core.domain.Cliente;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/clientes")
 public class ClienteRestController {
 
     private List<Cliente> clientes = new ArrayList<>(Arrays.asList(
@@ -18,44 +22,62 @@ public class ClienteRestController {
             new Cliente("col","1234","Colling")
     ));
 
-    @GetMapping("/clientes")
-    public List<Cliente>getClientes(){
-        return clientes;
+    public class ClienteNotFoundException extends RuntimeException {
+        public ClienteNotFoundException(String message) {
+            super(message);
+        }
     }
 
-    @GetMapping("/clientes/{userName}")
-    public Optional<Cliente> getCliente(@PathVariable String userName){
+    private Optional<Cliente> buscarClientePorUsername(String userName) {
         return clientes.stream()
                 .filter(cli -> cli.getUsername().equalsIgnoreCase(userName))
                 .findFirst();
-
     }
 
-    @PostMapping("/clientes")
-    public Cliente altaCliente(@RequestBody Cliente cliente){
+    @GetMapping
+    public ResponseEntity<?>getClientes(){
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/{userName}")
+    public ResponseEntity<?> getCliente(@PathVariable String userName){
+        return buscarClientePorUsername(userName)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<?> altaCliente(@RequestBody Cliente cliente){
         clientes.add(cliente);
-        return cliente;
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{username}")
+                .buildAndExpand(cliente.getUsername())
+                .toUri();
+        return ResponseEntity.created(location).body(cliente);
     }
 
-    @PutMapping("/clientes")
-    public Cliente modificacionCliente(@RequestBody Cliente cliente){
-
-        Cliente clienteEncontrado = clientes.stream().
-                filter(cli -> cli.getUsername().equalsIgnoreCase(cliente.getUsername())).
-                findFirst().orElseThrow();
+    @PutMapping
+    public ResponseEntity<?> modificacionCliente(@RequestBody Cliente cliente){
+        Cliente clienteEncontrado = buscarClientePorUsername(cliente.getUsername())
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
 
         clienteEncontrado.setPassword(cliente.getPassword());
-        clienteEncontrado.setNombre(clienteEncontrado.getNombre());
+        clienteEncontrado.setNombre(cliente.getNombre());
+        return ResponseEntity.ok(clienteEncontrado);
 
-        return cliente;
+
     }
 
-    @DeleteMapping("/clientes/{userName}")
-    public void deleteCliente(@PathVariable String userName){
-        Cliente clienteEncontrado = clientes.stream().
-                filter(cli -> cli.getUsername().equalsIgnoreCase(userName)).
-                findFirst().orElseThrow();
-
+    @DeleteMapping("/{userName}")
+    public ResponseEntity  deleteCliente(@PathVariable String userName){
+        Cliente clienteEncontrado = buscarClientePorUsername(userName)
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
         clientes.remove(clienteEncontrado);
+        return ResponseEntity.noContent().build();
+
     }
+
+
 }
