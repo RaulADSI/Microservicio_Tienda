@@ -5,13 +5,12 @@ import edu.tienda.core.domain.Cliente;
 import edu.tienda.core.exceptions.BadRequestException;
 import edu.tienda.core.exceptions.ResourceNotFoundExceptions;
 import edu.tienda.core.exceptions.ResourceNotFoundExceptions.ClienteNotFoundException;
+import edu.tienda.core.services.ClienteServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,29 +18,26 @@ import java.util.Optional;
 @RequestMapping("/clientes")
 public class ClienteRestController {
 
-    private List<Cliente> clientes = new ArrayList<>(Arrays.asList(
-            new Cliente("arm","1234","Armstrong"),
-            new Cliente("ald","1234","Aldrin"),
-            new Cliente("col","1234","Colling")
-    ));
+    private ClienteServiceImpl clienteService = new ClienteServiceImpl();
+
+    @GetMapping
+    public ResponseEntity<?> getClientes(){
+        List<Cliente> clientes = clienteService.getClientes();
+        return ResponseEntity.ok(clientes);
+    }
 
     private Optional<Cliente> buscarClientePorUsername(String userName) {
-        return clientes.stream()
+        return clienteService.stream()
                 .filter(cli -> cli.getUsername().equalsIgnoreCase(userName))
                 .findFirst();
     }
 
-    @GetMapping
-    public ResponseEntity<?>getClientes(){
-        return ResponseEntity.ok(clientes);
-    }
-
     @GetMapping("/{userName}")
     public ResponseEntity<?> getCliente(@PathVariable String userName){
-        if (userName.length() != 3){
+        if ((userName.length() != 3) || (userName == null) || userName.isBlank()){
             throw new BadRequestException("El parametro nombre de usuario debe contener 3 caracteres");
         }
-        return clientes.stream()
+        return clienteService.stream()
                 .filter(cliente -> cliente.getUsername().equalsIgnoreCase(userName)) // Filtramos el cliente correcto
                 .findFirst() // Obtenemos el primer resultado como un Optional
                 .map(ResponseEntity::ok) // Si el cliente existe, devolvemos ResponseEntity con 200 OK
@@ -50,7 +46,7 @@ public class ClienteRestController {
 
     @PostMapping
     public ResponseEntity<?> altaCliente(@RequestBody Cliente cliente){
-        clientes.add(cliente);
+        clienteService.addCliente(cliente);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -73,11 +69,12 @@ public class ClienteRestController {
     }
 
     @DeleteMapping("/{userName}")
-    public ResponseEntity  deleteCliente(@PathVariable String userName){
+    public ResponseEntity<?> deleteCliente(@PathVariable String userName) {
         Cliente clienteEncontrado = buscarClientePorUsername(userName)
                 .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
-        clientes.remove(clienteEncontrado);
+        clienteService.remove(clienteEncontrado);
         return ResponseEntity.noContent().build();
+
 
     }
 

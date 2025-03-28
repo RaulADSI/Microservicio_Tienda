@@ -1,5 +1,7 @@
 package edu.tienda.core.domain;
 
+import java.util.Objects;
+
 public class Cliente {
 
     private String username;
@@ -34,5 +36,18 @@ public class Cliente {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cliente cliente = (Cliente) o;
+        return Objects.equals(username, cliente.username); // Usa el campo único que identifica a un cliente
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username); // Asegúrate de usar el mismo campo
     }
 }
