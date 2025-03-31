@@ -16,7 +16,7 @@ public class ClienteEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id; // Using UUID as primary key
 
-    private String username; // Typically user-defined
+    private String username;
     private String password;
     private String nombre;
 }
