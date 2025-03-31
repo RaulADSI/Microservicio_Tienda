@@ -1,6 +1,5 @@
 package edu.tienda.core.controllers;
 
-
 import edu.tienda.core.exceptions.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,21 +8,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class ReponseEntityExceptionHandler  extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
-    protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request){
+    protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
+        // Create response body with details about the exception
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        body.put("timestamp", LocalDateTime.now()); // Changed to LocalDateTime for better precision
         body.put("message", ex.getMessage());
-        body.put("Error", HttpStatus.BAD_REQUEST.toString());
+        body.put("error", HttpStatus.BAD_REQUEST.value()); // Display numeric status code
+        body.put("path", request.getDescription(false).replace("uri=", "")); // Capture request URI
 
+        // Return response entity with HTTP 400 (Bad Request)
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+
     }
 }
