@@ -46,6 +46,12 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.28</version> <!-- Asegúrate de usar la última versión disponible -->
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
