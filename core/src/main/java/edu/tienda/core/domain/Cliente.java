@@ -1,12 +1,16 @@
 package edu.tienda.core.domain;
 
-import lombok.*;
 
-import java.util.Objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 
 public class Cliente {
 
