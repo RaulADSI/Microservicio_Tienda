@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Entity(name = "productos")
 @Data
+// Entidad que representa la tabla 'productos' en la base de datos.
 public class ProductoEntity {
 
     @Id

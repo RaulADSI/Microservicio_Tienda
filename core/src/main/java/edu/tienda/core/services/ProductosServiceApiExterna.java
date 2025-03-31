@@ -31,4 +31,9 @@ public class ProductosServiceApiExterna implements ProductoService{
 
         return productos;
     }
+
+    @Override
+    public void saveProducto(Producto producto) {
+
+    }
 }
