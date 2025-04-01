@@ -2,9 +2,9 @@ package edu.tienda.core.controllers;
 
 
 import edu.tienda.core.configurations.ConfigurationParameters;
-import edu.tienda.core.domain.Cliente;
 import edu.tienda.core.domain.Producto;
 import edu.tienda.core.services.ProductoService;
+import edu.tienda.core.services.ProductosServiceBdImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -59,4 +59,8 @@ public class ProductoControllerRest {
         ));
         return ResponseEntity.ok(productos);
     }
+
+
+
+
 }
