@@ -71,11 +71,6 @@
 			<artifactId>jmapper-core</artifactId>
 			<version>1.6.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>2.13.3</version> <!-- Ajusta a la versión que desees -->
-		</dependency>
 
 	</dependencies>
 

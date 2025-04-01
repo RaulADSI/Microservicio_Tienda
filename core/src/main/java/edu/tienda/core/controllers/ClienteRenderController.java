@@ -1,40 +1,35 @@
 package edu.tienda.core.controllers;
 
 
+import edu.tienda.core.domain.Cliente;
+import edu.tienda.core.services.ClienteRenderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 
 @RestController
 public class ClienteRenderController {
 
+    @Autowired
+    private ClienteRenderService clienteRenderService;
+
     @GetMapping(value = "/clientes-html", produces = MediaType.TEXT_HTML_VALUE)
     public String getClienteAsHtml(){
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<body>");
-        sb.append("<div><h1>Cliente</h1>");
-        sb.append("<ul>");
-        sb.append("<li>Nombre: Cosme Fulanito</li>");
-        sb.append("<li>Username: CFL</li>");
-        sb.append("</ul>");
-        sb.append("</div>");
-        sb.append("</body>");
-        sb.append("</html>");
-        return sb.toString();
+        return clienteRenderService.generarHtmlCliente();
     }
 
-    @GetMapping(value = "/clientes-xml", produces = MediaType.APPLICATION_ATOM_XML_VALUE)
-    public String getClienteAsXml(){
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<xml>");
-        sb.append("<cliente>");
-        sb.append("<nombre>Nombre: Cosme Fulanito</nombre>");
-        sb.append("<username>Username: Cosme Fulanito</username>");
-        sb.append("</cliente>");
-        sb.append("</xml>");
-        return sb.toString();
+    @GetMapping(value = "/clientes-xml", produces = MediaType.APPLICATION_XML_VALUE)
+    public String getClienteAsXml() {
+        try {
+            XmlMapper xmlMapper = new XmlMapper();
+            Cliente cliente = new Cliente("Cosme", "Fulanito");
+            return xmlMapper.writeValueAsString(cliente);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "<error>Failed to generate XML</error>";
+        }
     }
 }

@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 public class ClienteServiceImpl {
 
     private List<Cliente> clientes = new ArrayList<>(Arrays.asList(
-            new Cliente("arm","1234","Armstrong"),
-            new Cliente("ald","1234","Aldrin"),
-            new Cliente("col","1234","Colling")
+            new Cliente("arm","1234"),
+            new Cliente("ald","1234"),
+            new Cliente("col","1234")
     ));
 
     public List<Cliente> getClientes() {
