@@ -1,6 +1,7 @@
 package edu.tienda.core.services;
 
 
+import com.googlecode.jmapper.JMapper;
 import edu.tienda.core.domain.Producto;
 import edu.tienda.core.persistance.entities.ProductoEntity;
 import edu.tienda.core.persistance.repositories.ProductosRepository;
@@ -8,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service("BD")
 @ConditionalOnProperty(
@@ -23,7 +25,7 @@ public class ProductosServiceBdImpl  implements ProductoService{
 
     public List<Producto> getProductos() {
 
-        List<ProductoEntity> productosEntities = productosRepository.findAll();
+        List<ProductoEntity> productosEntities = productosRepository.findByNombreLike("Motocicleta");
         List<Producto> productos = new ArrayList<>();
 
         for (ProductoEntity productoEntity : productosEntities){
@@ -49,4 +51,8 @@ public class ProductosServiceBdImpl  implements ProductoService{
         producto.setId(savedEntity.getId());
 
     }
+
+
+
+
 }
